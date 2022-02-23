@@ -1,0 +1,307 @@
+<template>
+    <!--Refresh Button-->
+    <template if:true={firstCard}>
+    <lightning-card  title={headingResults} icon-name="standard:task"> 
+        <div class="slds-size_1-of-2">
+            <label class="slds-form-element__label"><b>Type of Tasks</b></label>
+                <select class="slds-select" onchange={selectOptionChangeValue2}>
+                   <template for:each={selectTargetValues.data} for:item="selectOptItem">
+                   <option key={selectOptItem.custFldvalue} value={selectOptItem.custFldvalue}>
+                       {selectOptItem.custFldlabel} 
+                   </option>
+                   </template>
+                </select>
+        </div>
+        <lightning-button-icon
+        slot="actions"
+        icon-name="utility:sync"
+        alternative-text="Refresh"
+        onclick={refreshTodoList}
+        title="Refresh"
+      >
+    </lightning-button-icon>
+    <lightning-button-icon
+    slot="actions"
+    icon-name="utility:edit"
+    alternative-text="Edit Heading"
+    onclick={editHeading}
+    title="Edit Heading"
+    disabled={btnDisable}>
+</lightning-button-icon>
+    </lightning-card>
+    </template>
+    <!--Second card-->
+    <template if:false={firstCard}>
+        <lightning-card  title="List of Tasks" icon-name="standard:task"> 
+            <div class="slds-size_1-of-2">
+                <label class="slds-form-element__label"><b>Type of Tasks</b></label>
+                    <select class="slds-select" onchange={selectOptionChangeValue2}>
+                       <template for:each={selectTargetValues.data} for:item="selectOptItem">
+                       <option key={selectOptItem.custFldvalue} value={selectOptItem.custFldvalue}>
+                           {selectOptItem.custFldlabel} 
+                       </option>
+                       </template>
+                    </select>
+            </div>
+            <lightning-button-icon
+            slot="actions"
+            icon-name="utility:sync"
+            alternative-text="Refresh"
+            onclick={refreshTodoList}
+            title="Refresh">
+        </lightning-button-icon>
+        <lightning-button-icon
+        slot="actions"
+        icon-name="utility:edit"
+        alternative-text="Edit Heading"
+        onclick={editHeading}
+        title="Edit Heading"
+          disabled={btnDisable}>
+    </lightning-button-icon>
+        </lightning-card>
+    </template>
+    <!--Refresh Button End-->
+           <article>
+                            <!--Using Table -->
+                        <div class="tableDiv slds-border_left  slds-border_right">
+                                <table   class="slds-table  slds-table_bordered ">
+                                <template if:true={processing}>
+                                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                                </template>
+                                <thead>
+                                     <tr class="slds-line-height_reset">
+                                         <th  class="slds-size_1-of-6 " scope="col">
+                                            <div class="slds-truncate "><h6>Task Name</h6></div>
+                                        </th>
+                                         <th class="slds-size_1-of-6 " scope="col">
+                                            <div class="slds-truncate " title="Name"><h6>Done</h6></div>
+                                        </th>
+                                        <th class="slds-size_1-of-6 " scope="col">
+                                            <div class="slds-truncate "><h6>Type</h6></div>
+                                        </th>
+                                         <th class="slds-size_1-of-6 " scope="col">
+                                            <div class="slds-truncate "><h6>Description</h6></div>
+                                        </th>
+                                         <th class="slds-size_1-of-6 " scope="col">
+                                            <div class="slds-truncate "> <h6>Actions</h6></div>
+                                        </th>
+                                     </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={tasksList} for:item="task">
+                                        <tr key={task.Id}>
+                                            <td>{task.name}</td>
+                                            <td>{task.types}</td>
+                                            <td>{task.pickl}</td>
+                                            <td>{task.description}</td>
+                                            
+                                            <td>
+                                                <!--Delete Action-->
+                                                <lightning-button-icon icon-name="utility:delete"
+                                                                       alternative-text="Delete"
+                                                                       onclick={deleteTaskFromList}
+                                                                       name={task.id}
+                                                                       title="Delete">
+                                                 </lightning-button-icon>
+                                                 <!--Delete Action End-->
+
+                                                 <!--Edit Action-->
+                                                 <lightning-button-icon 
+                                                         icon-name="utility:edit"
+                                                         alternative-text="Edit"
+                                                         name={task.recordId}
+                                                         onclick={handleEdit}>
+                                                 </lightning-button-icon>
+                                                 <!--Edit Action End-->
+                                            </td>                                         
+                                        </tr>
+                                    </template>
+                                </tbody>                              
+                            </table>
+                        </div>                           
+            </article>
+
+            <!--Tech List end-->
+            <!--Non Tech List Start-->
+            <template if:true={NtasksListbool}>
+            <article>
+                <!--Using Table -->
+            <div class="tableDiv slds-border_left  slds-border_right">
+                    <table   class="slds-table  slds-table_bordered ">
+                    <template if:true={processing}>
+                        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                    </template>
+                    <thead>
+                         <tr class="slds-line-height_reset">
+                             <th  class="slds-size_1-of-6 " scope="col">
+                                <div class="slds-truncate "><h6>Task Name</h6></div>
+                            </th>
+                             <th class="slds-size_1-of-6 " scope="col">
+                                <div class="slds-truncate " title="Name"><h6>Done</h6></div>
+                            </th>
+                            <th class="slds-size_1-of-6 " scope="col">
+                                <div class="slds-truncate "><h6>Type</h6></div>
+                            </th>
+                             <th class="slds-size_1-of-6 " scope="col">
+                                <div class="slds-truncate "><h6>Description</h6></div>
+                            </th>
+                             <th class="slds-size_1-of-6 " scope="col">
+                                <div class="slds-truncate "> <h6>Actions</h6></div>
+                            </th>
+                         </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={NtasksList} for:item="task">
+                            <tr key={task.Id}>
+                                <td>{task.name}</td>
+                                <td>{task.types}</td>
+                                <td>{task.pickl}</td>
+                                <td>{task.description}</td>
+                                
+                                <td>
+                                    <!--Delete Action-->
+                                    <lightning-button-icon icon-name="utility:delete"
+                                                           alternative-text="Delete"
+                                                           onclick={deleteTaskFromList}
+                                                           name={task.id}
+                                                           title="Delete">
+                                     </lightning-button-icon>
+                                     <!--Delete Action End-->
+
+                                     <!--Edit Action-->
+                                     <lightning-button-icon 
+                                             icon-name="utility:edit"
+                                             alternative-text="Edit"
+                                             name={task.recordId}
+                                             onclick={handleEdit}>
+                                     </lightning-button-icon>
+                                     <!--Edit Action End-->
+                                </td>                                         
+                            </tr>
+                        </template>
+                    </tbody>                              
+                </table>
+            </div>                           
+</article>
+</template>
+            <!--Non Tech List End-->
+     <br/><br/>
+     
+    <article class="slds-card " >
+            <lightning-card title="Create a Task" icon-name="standard:record_create"></lightning-card>
+        <div>
+             <div  class="slds-size_1-of-2">
+            <lightning-input 
+            label="Task Name"
+            type="text"
+            placeholder="Enter new Task"
+            value={newTask}
+            onchange={updateNewTask}
+            required>
+           </lightning-input>
+           </div>
+<!-- Type Picklist Field-->
+<div class="slds-size_1-of-2">
+    <label class="slds-form-element__label">Done</label>
+        <select class="slds-select" onchange={selectOptionChangeValue3}>
+           <template for:each={selectTargetValues3.data} for:item="selectOptItem">
+           <option key={selectOptItem.custFldvalue} value={selectOptItem.custFldvalue}>
+               {selectOptItem.custFldlabel} 
+           </option>
+           </template>
+        </select>
+</div>
+<!-- Type Picklist Field End-->
+
+<!--Done Picklist start-->
+<div class="slds-size_1-of-2">
+    <label class="slds-form-element__label">Type</label>
+        <select class="slds-select" onchange={selectOptionChangeValue}>
+           <template for:each={selectTargetValues.data} for:item="selectOptItem">
+           <option key={selectOptItem.custFldvalue} value={selectOptItem.custFldvalue}>
+               {selectOptItem.custFldlabel} 
+           </option>
+           </template>
+        </select>
+</div>
+
+<!--Done Picklist end-->
+<div  class="slds-size_1-of-2 " >
+<lightning-textarea
+           label="Task Description"
+           max-length="255"
+           value={newDescription}
+           placeholder="Enter Description"
+           onchange={updateNewDescription}>
+</lightning-textarea>
+</div>
+<br/>
+<div style = "position:relative; left:300px;">
+<lightning-button variant="brand"
+label="Add"
+onclick={addTaskToList}>
+</lightning-button>
+</div>
+        </div>
+       </article>
+       <!--Modal Pop up -->
+       <template if:true={bShowModal}>
+        <section role="dialog" tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+       class="slds-modal slds-fade-in-open">
+       <div class="slds-modal__container">
+            <!-- modal header start -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Task</h2>
+            </header>
+              <!-- modal body start -->
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                  
+                  <lightning-record-edit-form record-id={rcdId} object-api-name="Task__c" onsuccess={handleSuccess} onsubmit={handleSubmit}>
+                    <lightning-input-field field-name="Name"></lightning-input-field>        
+                    <lightning-input-field field-name="Done__c"></lightning-input-field>
+                    <lightning-input-field field-name="Type__c"></lightning-input-field>
+                    <lightning-input-field field-name="Description__c"></lightning-input-field>
+                      <lightning-button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Update" >
+                    </lightning-button>
+                    <lightning-button class="slds-m-top_small" variant="destructive" label="Cancel" onclick={handleCancel}></lightning-button>
+                  </lightning-record-edit-form>
+              </div>
+       </div>
+    </section>
+       </template>
+       
+
+       <!--Heading Modal-->
+       <template if:true={showHeading}>
+        <section role="dialog" tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+       class="slds-modal slds-fade-in-open">
+       <div class="slds-modal__container">
+            <!-- modal header start -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Edit Heading</h2>
+            </header>
+              <!-- modal body start -->
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+               <!-- <lightning-record-edit-form  object-api-name="Heading__c" onsuccess={handleSuccess2} onsubmit={handleSubmit2}>
+                    <lightning-input-field field-name="Name"></lightning-input-field>        
+                      <lightning-button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Update" >
+                    </lightning-button>
+                    <lightning-button class="slds-m-top_small" variant="destructive" label="Cancel" onclick={handleCancel2}></lightning-button>
+                  </lightning-record-edit-form>-->
+                  <lightning-input class="slds-p-around_medium" label="Name" name="accoutName" 
+                  onchange={nameChangedHandler}></lightning-input>
+                  <lightning-button class="slds-m-left_x-small" label="Update Heading" variant="brand" 
+                    onclick={createHeading}></lightning-button>
+                    <lightning-button class="slds-m-top_small" variant="destructive" label="Cancel" onclick={handleCancel2}></lightning-button>
+              </div>
+       </div>
+    </section>
+       </template>
+       <!--Heading Modal End-->
+</template>
