@@ -1,0 +1,60 @@
+public with sharing class TaskListController {
+    
+    @AuraEnabled(cacheable=true)
+    public static List<Task__c> getTasks(String typePick) {
+        
+        return [SELECT Name,Description__c,Done__c,Type__c FROM Task__c WHERE OwnerId =: UserInfo.getUserId() and Type__c =: typePick];
+        
+       
+    }
+
+    @AuraEnabled
+    public static Task__c insertTask(String name,String description,String types,String pickl) {
+        try {
+            Task__c task = new Task__c(
+                Name = name,
+                Description__c = description,
+                Done__c = types,
+                Type__c = pickl
+            );
+            insert task;
+            return task;
+        } catch(Exception e) {
+            System.debug(e.getMessage());
+        }
+        return null;
+    }
+
+    @AuraEnabled
+    public static Boolean deleteTask(Id recordId) {
+        try {
+            Database.delete(recordId);
+            return true;
+        } catch(Exception e) {
+            System.debug(e.getMessage());
+        }
+        return false;
+    }
+ 
+    //to get picklist values
+      @AuraEnabled(cacheable=true)
+     public static List < customValueWrapper > pickListValueDynamically(sObject customObjInfo, string selectPicklistApi) {
+        Schema.DescribeSObjectResult objDescribe = customObjInfo.getSObjectType().getDescribe();     
+        map < String, Schema.SObjectField > customFieldMap = objDescribe.fields.getMap();      
+        list < Schema.PicklistEntry > custPickValues = customFieldMap.get(selectPicklistApi).getDescribe().getPickListValues();
+        list < customValueWrapper > customObjWrapper = new list < customValueWrapper > ();
+        for (Schema.PicklistEntry myCustPick: custPickValues) {
+          customValueWrapper selectOptionValueWrapper = new customValueWrapper();
+             selectOptionValueWrapper.custFldlabel = myCustPick.getLabel();
+             selectOptionValueWrapper.custFldvalue = myCustPick.getValue();
+            customObjWrapper.add(selectOptionValueWrapper);
+        }
+        
+        return customObjWrapper;
+  
+      }
+  public with sharing class customValueWrapper {
+          @auraEnabled public string custFldlabel {get;set;}
+          @auraEnabled public string custFldvalue {get;set;}
+        }
+}
