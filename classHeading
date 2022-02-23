@@ -1,0 +1,12 @@
+public class lwcCustomMetaDataCtrl {
+
+     @AuraEnabled(cacheable=true)
+    public static List<Heading__c> getHeading() {
+        return [SELECT Name FROM Heading__c WHERE OwnerId =: UserInfo.getUserId() order by Createddate desc];
+    }
+    @AuraEnabled(cacheable=true)
+    public static user getUserInfo() {
+        String userId = UserInfo.getUserId(); // current user
+        return [SELECT ID, FirstName, LastName, Name, Title, Profile.Name,  Email From User WHERE ID =: userId LIMIT 1];
+    }
+}
